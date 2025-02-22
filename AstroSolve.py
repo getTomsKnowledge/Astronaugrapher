@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """
 @project: Astronaugrapher
-@author: Tom W and Chat G
+@author: Tom W and ChatGPT
 @date: 02/21/2025
+@summary: Leapfrog integration, barycenter calculations.
 """
 
 import numpy as np
@@ -37,7 +37,8 @@ class AstroSolve:
         return acc
 
     def run_simulation(self):
-        trajectories = np.zeros((self.num_steps + 1, len(self.bodies), 3), dtype=np.float64)
+        trajectories = np.zeros((self.num_steps + 1, len(self.bodies),\
+                                 3), dtype=np.float64)
         trajectories[0] = self.positions
         for step in range(1, self.num_steps + 1):
             acc = self.compute_accelerations(self.positions)

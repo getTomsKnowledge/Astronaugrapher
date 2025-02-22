@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """
 @project: Astronaugrapher
-@author: Tom W and Chat G
+@author: Tom W and ChatGPT
 @date: 02/21/2025
+@summary: MatPlotLib plotting of AstroSolve trajectories.
 """
 
 import matplotlib.pyplot as plt

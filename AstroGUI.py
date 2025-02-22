@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 @project: Astronaugrapher
-@author: Tom W and Chat G
+@author: Tom W and ChatGPT
 @date: 02/21/2025
+@description: Prompt user/take input, pass to other modules, 
+display trajectory plot to user.
 """
 import tkinter as tk
 from tkinter import ttk, messagebox

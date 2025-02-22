@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Feb 21 00:38:09 2025
-
-@author: Tom W
+@project: Astronaugrapher
+@author: Tom W and ChatGPT
+@date: 2/22/2025
+@summary: Main.  Calls GUI, Horizons manager, solver, plotter.
 """
 
 # Astronaugrapher: Main Driver Script

@@ -1,12 +1,10 @@
 """
 @project: Astronaugrapher
-@author: Tom W and Chat G
+@author: Tom W and ChatGPT
 @date: 02/21/2025
-
-This module retrieves initial state data from NASA JPL Horizons.
-FIX: Reformatted START_TIME and STOP_TIME to comply with Horizons API time format requirements.
-      - START_TIME and STOP_TIME now use "YYYY-MM-DD HH:MM:SS" format.
-      - STOP_TIME set to START_TIME + 1 second to satisfy Horizons requirement.
+@summary: Retrieve requested initial state data from
+NASA JPL Horizons over HTTP, handle any errors/messaging,
+pass data to other modules.
 """
 
 import requests
