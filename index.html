@@ -3,24 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Astronaugrapher</title>
+    <title>Astronaugrapher Web Interface</title>
     <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+    <style>
+        :root {
+            --primary-color: #1f1f2e;
+            --secondary-color: #4a4a66;
+            --accent-color: #ff8c42;
+            --text-color: #f0f0f0;
+            --background-color: #12121c;
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header, footer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        #input-form {
+            background-color: var(--primary-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #input-form h2 {
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        form label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        form input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: var(--background-color);
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #e57b33;
+        }
+
+        #plot-section {
+            background-color: var(--primary-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #plot {
+            width: 100%;
+            height: 600px;
+        }
+
+        footer p {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            #plot {
+                height: 400px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
         <h1>Astronaugrapher</h1>
-        <p>Your orbital mechanics simulator</p>
+        <p>Visualize orbital mechanics and trajectories from NASA JPL Horizons data.</p>
     </header>
+
     <main>
-        <section id="simulator">
-            <h2>Simulator</h2>
-            <div id="output"></div>
-            <button id="startButton">Start Simulation</button>
+        <section id="input-form">
+            <h2>Simulation Parameters</h2>
+            <form id="simulationForm">
+                <label for="bodies">Celestial Bodies (comma-separated):</label>
+                <input type="text" id="bodies" name="bodies" placeholder="e.g., Sun, Earth, Mars" required>
+
+                <label for="startDate">Start Date (YYYY-MM-DD):</label>
+                <input type="date" id="startDate" name="startDate" required>
+
+                <label for="endDate">End Date (YYYY-MM-DD):</label>
+                <input type="date" id="endDate" name="endDate" required>
+
+                <label for="stepSize">Step Size (seconds):</label>
+                <input type="number" id="stepSize" name="stepSize" min="1" placeholder="3600" required>
+
+                <button type="submit">Run Simulation</button>
+            </form>
+        </section>
+
+        <section id="plot-section">
+            <h2>Trajectory Plot</h2>
+            <div id="plot"></div>
         </section>
     </main>
+
     <footer>
-        <p>&copy; 2025 Astronaugrapher</p>
+        <p>Developed with ❤️ for space exploration.</p>
     </footer>
-    <script src="script.js"></script>
+
+    <!-- Load Plotly.js for interactive plotting -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        document.getElementById('simulationForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const bodies = document.getElementById('bodies').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const stepSize = document.getElementById('stepSize').value;
+
+            if (!bodies || !startDate || !endDate || !stepSize) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            const payload = {
+                bodies: bodies.split(',').map(body => body.trim()),
+                start_date: startDate,
+                end_date: endDate,
+                step_size: parseInt(stepSize, 10)
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/run-simulation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('Simulation failed.');
+
+                const data = await response.json();
+                plotTrajectories(data);
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        });
+
+        function plotTrajectories(data) {
+            const traces = data.trajectories.map((trajectory, index) => ({
+                x: trajectory.map(point => point[0]),
+                y: trajectory.map(point => point[1]),
+                z: trajectory.map(point => point[2]),
+                mode: 'lines',
+                name: data.bodies[index],
+                type: 'scatter3d',
+                line: { width: 3 }
+            }));
+
+            const layout = {
+                title: 'Orbital Trajectories',
+                scene: {
+                    xaxis: { title: 'X (km)' },
+                    yaxis: { title: 'Y (km)' },
+                    zaxis: { title: 'Z (km)' }
+                },
+                margin: { l: 0, r: 0, b: 0, t: 30 }
+            };
+
+            Plotly.newPlot('plot', traces, layout);
+        }
+    </script>
+
+    <!-- Python Backend (Flask) -->
+    <!-- Save the following in a separate "app.py" file and run it to handle requests -->
+    <!--
+    from flask import Flask, request, jsonify
+    from Astronaugrapher import main as run_astronaugrapher
+
+    app = Flask(__name__)
+
+    @app.route('/run-simulation', methods=['POST'])
+    def run_simulation():
+        data = request.json
+
+        # Pass user inputs to the existing Astronaugrapher main function
+        try:
+            user_params = {
+                'use_horizons': True,
+                'bodies': data['bodies'],
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'step_size': data['step_size'],
+                'ephem_type': "VECTORS",
+                'center': "500@0",
+                'out_units': "KM-S",
+                'vec_table': "3",
+                'ref_plane': "ECLIPTIC",
+                'ref_system': "J2000",
+                'vec_corr': "NONE",
+                'ang_format': "DEG",
+                'csv_format': "YES",
+                'obj_data': "NO",
+            }
+
+            # Run the main Astronaugrapher function with the given parameters
+            trajectories = run_astronaugrapher(user_params)
+            return jsonify({'bodies': data['bodies'], 'trajectories': trajectories.tolist()})
+
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    if __name__ == '__main__':
+        app.run(debug=True)
+    -->
 </body>
 </html>
