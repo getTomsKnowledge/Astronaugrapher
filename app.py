@@ -1,49 +1,38 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Feb 22 04:43:45 2025
-@project: Astronaugrapher
-@author: Tom W
-"""
-
-#<!-- Python Backend (Flask) -->
-#<!-- Save the following in a separate "app.py" file and run it to handle requests -->
-#<!--
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from Astronaugrapher import main as run_astronaugrapher
+import AstroQuery as horizons
 
 app = Flask(__name__)
 
-@app.route('/run-simulation', methods=['POST'])
-def run_simulation():
-    data = request.json
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-    # Pass user inputs to the existing Astronaugrapher main function
+@app.route('/simulate', methods=['POST'])
+def simulate():
+    user_params = request.json
     try:
-        user_params = {
-            'use_horizons': True,
-            'bodies': data['bodies'],
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'step_size': data['step_size'],
-            'ephem_type': "VECTORS",
-            'center': "500@0",
-            'out_units': "KM-S",
-            'vec_table': "3",
-            'ref_plane': "ECLIPTIC",
-            'ref_system': "J2000",
-            'vec_corr': "NONE",
-            'ang_format': "DEG",
-            'csv_format': "YES",
-            'obj_data': "NO",
-        }
-
-        # Run the main Astronaugrapher function with the given parameters
-        trajectories = run_astronaugrapher(user_params)
-        return jsonify({'bodies': data['bodies'], 'trajectories': trajectories.tolist()})
-
+        horizons_data = None
+        if user_params['use_horizons']:
+            horizons_data = horizons.retrieve_data(
+                user_params['bodies'],
+                EPHEM_TYPE=user_params['ephem_type'],
+                CENTER=user_params['center'],
+                START_TIME=user_params['start_date'],
+                STEP_SIZE=f"{user_params['step_size']} s",
+                OUT_UNITS=user_params['out_units'],
+                VEC_TABLE=user_params['vec_table'],
+                REF_PLANE=user_params['ref_plane'],
+                REF_SYSTEM=user_params['ref_system'],
+                VEC_CORR=user_params['vec_corr'],
+                ANG_FORMAT=user_params['ang_format'],
+                CSV_FORMAT=user_params['csv_format'],
+                OBJ_DATA=user_params['obj_data']
+            )
+        trajectories = run_astronaugrapher(user_params, horizons_data)
+        return jsonify({"status": "success", "trajectories": trajectories.tolist()})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"status": "error", "message": str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True)
-#-->

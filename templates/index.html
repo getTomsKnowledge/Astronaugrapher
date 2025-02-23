@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astronaugrapher</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Astronaugrapher</h1>
+        <p>Your orbital mechanics simulator</p>
+    </header>
+    <main>
+        <section id="simulator">
+            <h2>Simulator</h2>
+            <div id="output"></div>
+            <form id="simulationForm">
+                <label for="bodies">Bodies:</label>
+                <input type="text" id="bodies" name="bodies" value="Sun, Earth, Mars" required>
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date" name="start_date" value="2025-01-01" required>
+                <label for="step_size">Step Size (seconds):</label>
+                <input type="number" id="step_size" name="step_size" value="3600" required>
+                <button type="submit">Start Simulation</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Astronaugrapher</p>
+    </footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

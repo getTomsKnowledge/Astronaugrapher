@@ -1,0 +1,100 @@
+<style>
+       :root {
+           --primary-color: #1f1f2e;
+           --secondary-color: #4a4a66;
+           --accent-color: #ff8c42;
+           --text-color: #f0f0f0;
+           --background-color: #12121c;
+           --border-radius: 12px;
+       }
+       * {
+           box-sizing: border-box;
+           margin: 0;
+           padding: 0;
+       }
+       body {
+           font-family: Arial, sans-serif;
+           background-color: var(--background-color);
+           color: var(--text-color);
+           line-height: 1.6;
+           padding: 20px;
+       }
+       header, footer {
+           text-align: center;
+           margin-bottom: 20px;
+       }
+       header h1 {
+           font-size: 2.5rem;
+           color: var(--accent-color);
+       }
+       header p {
+           font-size: 1.2rem;
+           color: var(--secondary-color);
+       }
+       main {
+           display: grid;
+           grid-template-columns: 1fr 2fr;
+           gap: 20px;
+           max-width: 1200px;
+           margin: auto;
+       }
+       #input-form {
+           background-color: var(--primary-color);
+           padding: 20px;
+           border-radius: var(--border-radius);
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+       }
+       #input-form h2 {
+           margin-bottom: 10px;
+           color: var(--accent-color);
+       }
+       form label {
+           display: block;
+           margin-top: 10px;
+       }
+       form input {
+           width: 100%;
+           padding: 8px;
+           margin-top: 5px;
+           border: none;
+           border-radius: var(--border-radius);
+           background-color: var(--secondary-color);
+           color: var(--text-color);
+       }
+       button {
+           background-color: var(--accent-color);
+           color: var(--background-color);
+           padding: 10px 20px;
+           border: none;
+           border-radius: var(--border-radius);
+           cursor: pointer;
+           margin-top: 15px;
+           font-weight: bold;
+       }
+       button:hover {
+           background-color: #e57b33;
+       }
+       #plot-section {
+           background-color: var(--primary-color);
+           padding: 20px;
+           border-radius: var(--border-radius);
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+       }
+       #plot {
+           width: 100%;
+           height: 600px;
+       }
+       footer p {
+           margin-top: 20px;
+           font-size: 0.9rem;
+           color: var(--secondary-color);
+       }
+       @media (max-width: 768px) {
+           main {
+               grid-template-columns: 1fr;
+           }
+           #plot {
+               height: 400px;
+           }
+       }
+</style>
