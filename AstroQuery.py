@@ -1,17 +1,7 @@
-"""
-@project: Astronaugrapher
-@author: Tom W and ChatGPT
-@date: 02/21/2025
-@summary: Retrieve requested initial state data from
-NASA JPL Horizons over HTTP, handle any errors/messaging,
-pass data to other modules.
-"""
-
 import requests
 from datetime import datetime, timedelta
 from urllib.parse import urlencode, quote 
 
-# Mapping of body names to Horizons IDs
 HORIZONS_IDS = {
     'Sun': '10',
     'Mercury': '199',
@@ -26,42 +16,16 @@ HORIZONS_IDS = {
     'Pluto': '999'
 }
 
-
-# Custom quoting function to preserve '@'
 def custom_quote(s, safe='/', encoding=None, errors=None):
-    return quote(s, safe=safe + '@: ', encoding=encoding, errors=errors)  # Preserve '@', ':', and ' '
+    return quote(s, safe=safe + '@: ', encoding=encoding, errors=errors)
 
 def format_horizons_time(dt):
-    """
-    Formats a datetime object into a Horizons-compliant time string with single quotes.
-
-    Horizons expects date-time strings wrapped in single quotes:
-    Example: '2025-01-01 00:00:00'
-
-    Parameters:
-        dt (datetime): Datetime object to format.
-
-    Returns:
-        str: Formatted time string wrapped in single quotes.
-    """
-    return f"'{dt.strftime('%Y-%m-%d %H:%M:%S')}'"  # Include single quotes as required
+    return f"'{dt.strftime('%Y-%m-%d %H:%M:%S')}'"
 
 def retrieve_data(bodies, START_TIME, EPHEM_TYPE="VECTORS", CENTER="500@0", STEP_SIZE=60, OUT_UNITS="'KM-S'",
                    VEC_TABLE="3", REF_PLANE="ECLIPTIC", REF_SYSTEM="J2000", VEC_CORR="NONE", ANG_FORMAT="DEG",
                    CSV_FORMAT="YES", OBJ_DATA="NO"):
-    """
-    Retrieves initial state data for each celestial body from NASA JPL Horizons.
-
-    Parameters:
-        bodies (list): List of celestial body names.
-        START_TIME (datetime or str): Start date/time as datetime object or compliant string.
-        Other parameters: Horizons API parameters.
-
-    Returns:
-        dict: Positions and velocities for each body.
-    """
-
-    # Convert START_TIME to datetime if it's a string
+    
     if isinstance(START_TIME, str):
         try:
             START_TIME = datetime.strptime(START_TIME, "%Y-%m-%d")
@@ -73,16 +37,14 @@ def retrieve_data(bodies, START_TIME, EPHEM_TYPE="VECTORS", CENTER="500@0", STEP
         print("Error: START_TIME must be a datetime object or a correctly formatted string.")
         return {}
 
-    # Format times to Horizons-compliant strings with single quotes
     start_time_str = format_horizons_time(START_TIME)
     float_step_size = float(STEP_SIZE.strip("'").split()[0])
     step_unit = STEP_SIZE[-1]
     if (step_unit.lower() == 's'):
-        stop_time_str = format_horizons_time(START_TIME + timedelta(seconds=float_step_size*10)) # STOP_TIME must be after START_TIME
+        stop_time_str = format_horizons_time(START_TIME + timedelta(seconds=float_step_size*10))
     else:
-        stop_time_str = format_horizons_time(START_TIME + timedelta(hours=float_step_size*10)) # STOP_TIME must be after START_TIME
+        stop_time_str = format_horizons_time(START_TIME + timedelta(hours=float_step_size*10))
     
-
     HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
     data = {}
 
@@ -94,13 +56,13 @@ def retrieve_data(bodies, START_TIME, EPHEM_TYPE="VECTORS", CENTER="500@0", STEP
         
         query_params = {
             'format': 'json',
-            'COMMAND': body_id,                   # No extra quotes required around the ID
+            'COMMAND': body_id,
             'CENTER': CENTER,
             'EPHEM_TYPE': EPHEM_TYPE,
-            'START_TIME': start_time_str,         # Single-quoted time string
-            'STOP_TIME': stop_time_str,           # Single-quoted time string, one second after START_TIME
-            'STEP_SIZE': str(int(float_step_size)),  # + '%20' + step_unit,          # Ensure it's a string without units
-            'OUT_UNITS': OUT_UNITS,               # Already enclosed in single quotes if passed correctly
+            'START_TIME': start_time_str,
+            'STOP_TIME': stop_time_str,
+            'STEP_SIZE': str(int(float_step_size)),
+            'OUT_UNITS': OUT_UNITS,
             'VEC_TABLE': VEC_TABLE,
             'REF_PLANE': REF_PLANE,
             'REF_SYSTEM': REF_SYSTEM,
@@ -110,13 +72,9 @@ def retrieve_data(bodies, START_TIME, EPHEM_TYPE="VECTORS", CENTER="500@0", STEP
             'OBJ_DATA': OBJ_DATA
         }
         
-
         try:
-            # URL-encode parameters to ensure compliance with Horizons API
             encoded_params = urlencode(query_params, quote_via=custom_quote)
             request_url = f"{HORIZONS_API_URL}?{encoded_params}"
-
-            print(f"Retrieving data for {body} with URL:\n{request_url}")
 
             response = requests.get(HORIZONS_API_URL, params=query_params, timeout=30)
             response.raise_for_status()

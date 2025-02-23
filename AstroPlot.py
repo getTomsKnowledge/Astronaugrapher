@@ -1,10 +1,3 @@
-"""
-@project: Astronaugrapher
-@author: Tom W and ChatGPT
-@date: 02/21/2025
-@summary: MatPlotLib plotting of AstroSolve trajectories.
-"""
-
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -19,11 +12,6 @@ class AstroPlot:
             traj = trajectories[:, i, :]
             ax.plot(traj[:, 0], traj[:, 1], traj[:, 2], label=name)
         ax.legend()
-        ax.set_xlabel('x (KM)')
-        ax.set_ylabel('y (KM)')
-        ax.set_zlabel('z (KM)')
-        ax.set_title('Leapfrog Solution in Barycentric Frame')
-        
         self._embed_plot(fig)
 
     def _embed_plot(self, fig):
