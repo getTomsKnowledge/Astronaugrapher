@@ -1,3 +1,7 @@
-Flask
+flask
 requests
 gunicorn
+tkinter
+datetime
+matplotlib
+urllib
