@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "build": "cp -r templates static public/",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "vite dev",
+    "dev-custom": "vite --config ./config/vite.config.js"
   },
   "dependencies": {
     "express": "^4.17.1"
