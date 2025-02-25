@@ -2,7 +2,7 @@
   "name": "astronaugrapher-frontend",
   "version": "1.0.0",
   "scripts": {
-    "build": "cp -r templates static",
+    "build": "cp -r templates",
     "start": "node server.js",
     "dev": "vite dev",
     "dev-custom": "vite --config ./config/vite.config.js"

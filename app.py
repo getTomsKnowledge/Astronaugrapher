@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify, render_template
 from Astronaugrapher import main as run_astronaugrapher
 import AstroQuery as horizons
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 @app.route('/templates')
 def home():
