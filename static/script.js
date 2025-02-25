@@ -22,7 +22,7 @@ document.getElementById('simulationForm').addEventListener('submit', function(ev
         obj_data: "NO"
     };
 
-    fetch('https://astronaugrapher-backend.onrender.com/simulate', { // Replace with your Render URL
+    fetch('https://astronaugrapher-backend.onrender.com', { // Replace with your Render URL
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
