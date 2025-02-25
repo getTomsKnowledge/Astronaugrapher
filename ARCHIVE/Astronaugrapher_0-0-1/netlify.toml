@@ -1,8 +1,0 @@
-[build]
-  functions = "functions"
-  publish = "."
-
-[[redirects]]
-  from = "/run-simulation"
-  to = "/.netlify/functions/run_simulation"
-  status = 200
